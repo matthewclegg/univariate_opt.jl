@@ -6,6 +6,7 @@ Univariate optimization and root-finding code for Julia
 Usage
 =====
 
+<code>
 min(F::Function, x0::Float64, x1::Float64)
 max(F::Function, x0::Float64, x1::Float64)
 argmin(F::Function, x0::Float64, x1::Float64)
@@ -13,6 +14,7 @@ argmax(F::Function, x0::Float64, x1::Float64)
 zero(F::Function, x0::Float64, x1::Float64)
 inv(F::Function, x0::Float64, x1::Float64)
 polynomial_roots(a::Vector{Float64})
+</code>
 
 Details
 =======
@@ -72,6 +74,7 @@ the following, v is a vector of length 3,001, and w is a vector of
 length 30,001.  These tests were conducted on a Mac Pro with 2.66 GHz
 Xeon processors.
 
+<pre>
                                                               Julia        R
  10000 reps of A:  min(x->x^2-1, -5., 0.)                     0.479 sec    0.681 sec
  10000 reps of B:  min(x->x^2-1, 1., 10.)                     0.477 sec    0.722 sec
@@ -79,12 +82,14 @@ Xeon processors.
  10000 reps of D:  zero(x->x^2-1, -5., 2.)                    0.107 sec    0.464 sec
   1000 reps of E:  min(x->sum((v - x).^2), -10., 20.)         0.391 sec    0.513 sec
    100 reps of F:  zero(x->sum(x - w.^2), -100., 200          0.581 sec    0.528 sec
+</pre>
 
 See the benchmark() routine for further details.
 
 Examples
 ========
 
+<pre>
 julia> min(x->(x-2)*(x+3), -10., 10.)
 -6.25
 
@@ -122,6 +127,7 @@ julia> H10=[-30240., 0., 302400., 0., -403200., 0., 161280., 0., -23040., 0., 10
 julia> @time polynomial_roots(H10)
 elapsed time: 0.055845022201538086 seconds
 ([-3.43616, -2.53273, -1.75668, -1.03661, -0.342901, 0.342901, 1.03661, 1.75668, 2.53273, 3.43616],[1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+</pre>
 
 See also
 ========
@@ -139,5 +145,10 @@ References
 
 William H. Press, Saul A. Teukolsky, William T. Vetterling and Brian P. Flannery.  2007. "Numerical Recipes:  That Art of Scientific Computing, 3rd Edition" Cambridge: Cambridge University Press.
 
-Comments and suggestions are of course welcome.
+Author
+======
 
+Matthew Clegg
+matthewcleggphd@gmail.com
+
+Comments and suggestions are of course welcome.
