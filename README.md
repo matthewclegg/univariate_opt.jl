@@ -6,7 +6,7 @@ Univariate optimization and root-finding code for Julia
 Usage
 =====
 
-<code>
+<pre>
 min(F::Function, x0::Float64, x1::Float64)
 max(F::Function, x0::Float64, x1::Float64)
 argmin(F::Function, x0::Float64, x1::Float64)
@@ -14,7 +14,7 @@ argmax(F::Function, x0::Float64, x1::Float64)
 zero(F::Function, x0::Float64, x1::Float64)
 inv(F::Function, x0::Float64, x1::Float64)
 polynomial_roots(a::Vector{Float64})
-</code>
+</pre>
 
 Details
 =======
@@ -148,7 +148,7 @@ William H. Press, Saul A. Teukolsky, William T. Vetterling and Brian P. Flannery
 Author
 ======
 
-Matthew Clegg
+Matthew Clegg<br /> 
 matthewcleggphd@gmail.com
 
 Comments and suggestions are of course welcome.
