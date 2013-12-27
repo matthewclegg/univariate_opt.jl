@@ -101,7 +101,7 @@ module univariate_opt
 # elapsed time: 0.055845022201538086 seconds
 # ([-3.43616, -2.53273, -1.75668, -1.03661, -0.342901, 0.342901, 1.03661, 1.75668, 2.53273, 3.43616],[1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
 
-import Base.*
+import Base.min, Base.max
 export min, argmin, max, argmax, zero, inv,
   find_zero_bracket, find_maximum_bracket, 
   golden_section_search, golden_section_search_with_brent_steps,
@@ -140,15 +140,15 @@ function find_maximum_bracket(
 
   bracket_list = [Bracket(p0,p1,fp0,fp1)]
   for i = 3:maxprobe  # Why start at 3? Because F has been called twice already
-    iv = shift(bracket_list)
+    iv = shift!(bracket_list)
     c = 0.5 * (iv.a + iv.b)
     fc = F(c)::Float64
     if (fc > iv.fa) && (fc > iv.fb)
       return (iv.a, c, iv.b, iv.fa, fc, iv.fb)
     end
     @debug println("bracketing $([iv.a,c,iv.b]) -> $([iv.fa, fc, iv.fb])")
-    push(bracket_list, Bracket(iv.a, c, iv.fa, fc))
-    push(bracket_list, Bracket(c, iv.b, fc, iv.fb))
+    push!(bracket_list, Bracket(iv.a, c, iv.fa, fc))
+    push!(bracket_list, Bracket(c, iv.b, fc, iv.fb))
   end
   
   error ("find_maximum_bracket could not find a bracket")
@@ -185,22 +185,22 @@ function find_maximum_bracket(
   left_bound = p0
   right_bound = p1
   for i = 3:maxprobe  # Why start at 3? Because F has been called twice already
-    iv = shift(bracket_list)
+    iv = shift!(bracket_list)
     c = 0.5 * (iv.a + iv.b)
     fc = F(c)::Float64
     if (fc > iv.fa) && (fc > iv.fb)
       return (iv.a, c, iv.b, iv.fa, fc, iv.fb)
     end
     @debug println("bracketing $([iv.a,c,iv.b]) -> $([iv.fa, fc, iv.fb])")
-    push(bracket_list, Bracket(iv.a, c, iv.fa, fc))
-    push(bracket_list, Bracket(c, iv.b, fc, iv.fb))
+    push!(bracket_list, Bracket(iv.a, c, iv.fa, fc))
+    push!(bracket_list, Bracket(c, iv.b, fc, iv.fb))
     if extend_left && (iv.a == left_bound)
       left_bound = left_bound - 2 * (iv.b - iv.a)
-      push(bracket_list, Bracket(left_bound, iv.a, F(left_bound)::Float64, iv.fa))
+      push!(bracket_list, Bracket(left_bound, iv.a, F(left_bound)::Float64, iv.fa))
     end
     if extend_right && (iv.b == right_bound)
       right_bound = right_bound + 2 * (iv.b - iv.a)
-      push(bracket_list, Bracket(iv.b, right_bound, iv.fb, F(right_bound)::Float64))
+      push!(bracket_list, Bracket(iv.b, right_bound, iv.fb, F(right_bound)::Float64))
     end
   end
   
@@ -234,7 +234,7 @@ function find_zero_bracket(
   bracket_list = [Bracket(p0,p1,fp0,fp1)]
   nprobes = 2
   while length(bracket_list) > 0 
-    iv = shift(bracket_list)
+    iv = shift!(bracket_list)
     if iv.fa * iv.fb <= 0.
       return (iv.a, iv.b, iv.fa, iv.fb)
     end
@@ -243,9 +243,9 @@ function find_zero_bracket(
       c = 0.5 * (iv.a + iv.b)
       fc = F(c)::Float64
       @debug println("bracketing $([iv.a, c, iv.fa, fc])")
-      push(bracket_list, Bracket(iv.a, c, iv.fa, fc))
+      push!(bracket_list, Bracket(iv.a, c, iv.fa, fc))
       @debug println("bracketing $([c, iv.b, fc, iv.fb])")
-      push(bracket_list, Bracket(c, iv.b, fc, iv.fb))
+      push!(bracket_list, Bracket(c, iv.b, fc, iv.fb))
     end
   end
   
@@ -795,7 +795,7 @@ function test()
   @assert approx_eq(argmax(x->f3(x), 0., 5.), 5.)
   @assert approx_eq(argmax(x->-f4(x), 0., 2.5), 1.38196)
   @assert approx_eq(argmax(x->-f4(x), 2.5, 5.), 3.61803)
-  @assert approx_eq(argmax(x->sin(x), 0., pi), pi/2.)
+  @assert approx_eq(argmax(x->sin(x), 0., float64(pi)), pi/2.)
   
   # max
   @assert approx_eq(max(x->x, 0., 1.), 1.)
@@ -808,7 +808,7 @@ function test()
   @assert approx_eq(max(x->f3(x), 0., 5.), 24.)
   @assert approx_eq(max(x->-f4(x), 0., 2.5), 1.)
   @assert approx_eq(max(x->-f4(x), 2.5, 5.), 1.)
-  @assert approx_eq(max(x->sin(x), 0., pi), 1.)
+  @assert approx_eq(max(x->sin(x), 0., float64(pi)), 1.)
 
   # argmin
   @assert approx_eq(argmin(x->x, 0., 1.), 0.)
@@ -866,7 +866,7 @@ function test()
   @assert_exception g1(2.)
   
   atan2 = inv(tan, -1.5, 1.5)
-  atan_err = max(map(x->atan2(x)-atan(x), (-100:100)*0.01))
+  atan_err = maximum(map(x->atan2(x)-atan(x), (-100:100)*0.01))
   @assert atan_err < sqrt(eps(Float64))
   
   # polynomial_roots
@@ -1072,21 +1072,21 @@ function polynomial_roots (a::Vector{Float64})
   #   xend^(i-1-n) * |anorm[i]| <= 1/(n+1)
   # for each i.  From this, it can easily be worked out that f(z) > 0 
   # for all z >= xend.
-  xend = max([(1.0/((n+1) * abs(anorm[i])))^(1.0/(i-1-n)) for i = 1:n])
+  xend = maximum([(1.0/((n+1) * abs(anorm[i])))^(1.0/(i-1-n)) for i = 1:n])
   
   dzeros = [-xend, dzeros..., xend]
   dmult = [0, dmult..., 0]
   
   for i = 1:(length(dzeros)-1)
     if abs(f(dzeros[i])) <= min_eps
-      push(fzeros, dzeros[i])
-      push(fmult, dmult[i]+1)
+      push!(fzeros, dzeros[i])
+      push!(fmult, dmult[i]+1)
     elseif abs(f(dzeros[i+1])) <= min_eps
       continue
     elseif f(dzeros[i])*f(dzeros[i+1]) < 0
       z = zero(f, dzeros[i], dzeros[i+1])
-      push(fzeros, z)
-      push(fmult, 1)
+      push!(fzeros, z)
+      push!(fmult, 1)
     end
   end
       
