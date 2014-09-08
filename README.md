@@ -143,7 +143,7 @@ linear models.  https://github.com/dmbates/glm.jl
 References
 ==========
 
-William H. Press, Saul A. Teukolsky, William T. Vetterling and Brian P. Flannery.  2007. "Numerical Recipes:  That Art of Scientific Computing, 3rd Edition" Cambridge: Cambridge University Press.
+William H. Press, Saul A. Teukolsky, William T. Vetterling and Brian P. Flannery.  2007. "Numerical Recipes:  The Art of Scientific Computing, 3rd Edition" Cambridge: Cambridge University Press.
 
 Author
 ======
